@@ -1,0 +1,7 @@
+pyHimawari8/__pycache__
+tests/__pycache__
+log
+.vscode
+tmp/
+pyHimawari8/config/settings.toml
+notebook/.ipynb_checkpoints

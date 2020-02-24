@@ -1,0 +1,28 @@
+      obstime	: Observation time (UTC)
+      dettime	: Processing time  (UTC)
+      sat	: Name of satellite
+      algo	: Name of Algorithm
+      okm	: Filename of HIMAWARII L1 dataset 
+      sampl	: sample number of a fire pixel
+      line	: line number of a fire pixel
+      lon	: longitude of fire pixel			[degree]
+      lat	: latitude of fire pixel		  	[degree]
+      viewzenang: Satellite viewing angle		  	[degree]
+      viewazang	: Satellite azimath angle		  	[degree]
+      pixwid	: Fire pixel width (Along Track)          	[km]
+      pixlen	: Fire pixel length (Cross Track)         	[km]
+      t07	: Brightness temperature of Band 07       	[K]
+      t14	: Brightness temperature of Band 14       	[K]
+      t07_t14	: Brightness temperature difference as B21-B31	[K]
+      meant07	: Average brightness temperature of B07		[K]
+      meant14	: Average brightness temperature of B14		[K]
+      meandt	: Average brightness temperature difference 	[K]
+      sdt07	: Standard deviation of brightness temp. of B07 [K]
+      sdt14	: Standard deviation of brightness temp. of B14 [K]
+      sddt	: Standard deviation of brightness temp. diff.  [K]
+      ref3	: Refrectance of B03
+      ref4	: Refrectance of B04
+      fire_idx	: Fire index
+      fire	: Fire pixel (fire : 1,  non-fire : 0)
+      test1_6	: Result of fire detection criteria
+      pixel	: Shape of nominal fire pixel as WKT format in EPSG:4326

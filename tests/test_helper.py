@@ -6,7 +6,7 @@ import unittest
 projectDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(projectDir, 'pyHimawari8'))
 
-from helper import parseTime
+from helper import parseTime, tRange, getH8ProdFile
 
 
 class Test(unittest.TestCase):
@@ -33,6 +33,30 @@ class Test(unittest.TestCase):
             ft='CLP', pLe='L2')
 
         self.assertEqual(thisTime, dt.datetime(2020, 1, 1, 0, 0, 0))
+
+    def test_tRange(self):
+        print('---> Test on tRange')
+
+        tStart = dt.datetime(2011, 1, 2, 23, 11, 0)
+        tStop = dt.datetime(2011, 1, 3, 3, 4, 1)
+
+        tList = tRange(tStart, tStop, timedelta=1800)
+
+        self.assertEqual(len(tList), 8)
+        self.assertEqual(tList[0], tStart)
+        self.assertEqual(tList[1], dt.datetime(2011, 1, 2, 23, 41, 0))
+        self.assertEqual(tList[-1], dt.datetime(2011, 1, 3, 2, 41, 0))
+
+    def test_getH8ProdFile(self):
+
+        mTime = dt.datetime(2020, 2, 19, 4, 0, 0)
+        file_ARP = getH8ProdFile(mTime, 'ARP')
+        file_CLP = getH8ProdFile(mTime, 'CLP', version='010')
+
+        self.assertEqual(file_ARP,
+                         'NC_H08_20200219_0400_L2ARP021_FLDK.02401_02401.nc')
+        self.assertEqual(file_CLP,
+                         'NC_H08_20200219_0400_L2CLP010_FLDK.02401_02401.nc')
 
 
 def main():

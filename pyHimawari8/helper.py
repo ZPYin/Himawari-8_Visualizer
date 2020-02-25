@@ -6,6 +6,111 @@ from logger import logger
 import numpy as np
 
 
+def getH8ProdFile(thisTime, product, *,
+                  pLe='L2', version='021',
+                  pixelNum='02401', lineNum='02401'):
+    """
+    get the Himawari-8 product filename.
+
+    Parameters
+    ----------
+    thisTime: datetime
+        query time.
+    product: str
+        product type.
+        1. 'CLP': cloud property
+        2. 'ARP': aerosol property
+    Keywords
+    --------
+    pLe: str
+        product level (default: 'L2'). ('L2' or 'L3')
+    version: str
+        algorithm version (default: '021'). ('010', '020' or '021')
+    pixelNum: str
+        pixel number (default: '02401').
+    lineNum: str
+        line number (default: '02401').
+    Examples
+    --------
+    >>> import datetime as np
+    >>> getH8ProdFile(dt.datetime(2011, 1, 1), 'CLP')
+    'NC_H08_20110101_0000_L2CLP021_FLDK.02401_02401.nc'
+
+    History
+    -------
+    2020-02-25 First version.
+    """
+
+    file = ''
+
+    if product == 'CLP':
+        # cloud product
+        file = 'NC_H08_{yyyymmdd}_{HHMM}_{pLe}'.format(
+                    yyyymmdd=thisTime.strftime('%Y%m%d'),
+                    HHMM=thisTime.strftime('%H%M'),
+                    pLe=pLe) +\
+               '{product}{version}_FLDK.{pixelNum}_{lineNum}.nc'.format(
+                   product=product,
+                   version=version,
+                   pixelNum=pixelNum,
+                   lineNum=lineNum)
+    elif product == 'ARP':
+        # aerosol product
+        file = 'NC_H08_{yyyymmdd}_{HHMM}_{pLe}'.format(
+                    yyyymmdd=thisTime.strftime('%Y%m%d'),
+                    HHMM=thisTime.strftime('%H%M'),
+                    pLe=pLe) +\
+               '{product}{version}_FLDK.{pixelNum}_{lineNum}.nc'.format(
+                   product=product,
+                   version=version,
+                   pixelNum=pixelNum,
+                   lineNum=lineNum)
+    else:
+        raise Exception('Unknown product {}'.format(product))
+
+    return file
+
+
+def tRange(tStart, tStop, *, timedelta=300):
+    """
+    Generate datetime list between tStart and tStop with fixed timedelta.
+
+    Parameters
+    ----------
+    tStart: datetime
+        start time.
+    tStop: datetime
+        stop time.
+    Keywords
+    --------
+    timedelta: int
+        time delta in seconds (default: 300).
+    Returns
+    -------
+    tList: list
+        datetime between tStart and tStop with fixed timedelta.
+    Examples
+    --------
+    >>> import datetime as dt
+    >>> tList = tRange(dt.datetime(2011, 1, 1), dt.datetime(2011, 1, 2), ...
+    >>>                timedelta=3600 * 12)
+    >>> tList
+    [datetime.datetime(2011, 1, 1, 0, 0), datetime.datetime(2011, 1, 1, 12, 0),
+    datetime.datetime(2011, 1, 2, 0, 0)]
+
+    History
+    -------
+    2020-02-25 First version.
+    """
+
+    nTimedelta = int((tStop - tStart) / dt.timedelta(seconds=timedelta)) + 1
+    tList = [tStart + dt.timedelta(seconds=timedelta * i)
+             for i in range(0, nTimedelta)
+             if tStart + dt.timedelta(seconds=timedelta * i) <= tStop]
+
+    return tList
+
+
 def parseTime(file, ft='CLP', pLe='L2'):
     """
     parse the measurement time from the filename string.
@@ -98,6 +203,9 @@ def read_Himawari8(inFile):
     """
     read Himawari8 binary data.
 
+    WARNING WARNING WARNING!!!
+    Discarded since satpy provides easier interface to play with HSD dataset.
+
     Parameters
     ----------
     inFile: str
@@ -109,8 +217,6 @@ def read_Himawari8(inFile):
     References
     ----------
     1. https://blog.csdn.net/qq_33339770/article/details/102708243
-    History
-    -------
     """
 
     resolution = int(os.path.basename(inFile)[-12])

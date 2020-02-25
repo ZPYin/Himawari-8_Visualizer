@@ -15,7 +15,7 @@ from helper import parseTime
 import toml
 import fnmatch
 
-# plt.switch_backend('Agg')
+plt.switch_backend('Agg')
 PROJECTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_FILE = os.path.join(PROJECTDIR,
                            'pyHimawari8', 'config', 'settings.toml')
@@ -48,7 +48,7 @@ class Visualizer(object):
                 getattr(self.fd.variables[variable], 'long_name')))
             count = count + 1
 
-    def load_data(self, product, *, ft='CLP', pLe='L2'):
+    def load_data(self, product, mTime):
         """
         load data to the workspace.
         """
@@ -68,12 +68,7 @@ class Visualizer(object):
         self.lat = lat[mask_lat]
         self.lon = lon[mask_lon]
 
-        try:
-            self.mTime = parseTime(self.file, ft=ft, pLe=pLe)
-        except Exception as e:
-            logger.warning(
-                'Failure in parsing time from {0}'.format(self.file))
-            raise e
+        self.mTime = mTime
 
     def colorplot_with_RGB(self, imgFile, *args,
                            axLatRange=[20, 60], axLonRange=[90, 140],
@@ -220,7 +215,7 @@ class Visualizer(object):
             cbar.ax.set_yticklabels(kwargs['cb_ticklabels'])
 
         # Show figure
-        plt.show()
+        # plt.show()
         plt.savefig(imgFile)
 
     def colorplot(self, imgFile, *args,
@@ -319,5 +314,5 @@ class Visualizer(object):
             cbar.ax.set_yticklabels(kwargs['cb_ticklabels'])
 
         # Show figure
-        plt.show()
+        # plt.show()
         plt.savefig(imgFile)

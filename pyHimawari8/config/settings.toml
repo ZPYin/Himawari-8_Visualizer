@@ -1,8 +1,8 @@
 # JAXAFTP_MP = "/mnt/ftp_mount_point/jma/hsd"   # root directory of Himawari-8 HSD
-JAXAFTP_MP = '/'
-JAXAFTP_LINK = ''
-IMG_DIR = '/'
-BDY_DIR = ''   # baidu yun sync directory
+JAXAFTP_MP = '/mnt/ftp_mount_point'
+JAXAFTP_LINK = 'ftp://zp.yin_whu.edu.cn:SP+wari8@ftp.ptree.jaxa.jp/'
+IMG_DIR = '/root/data/himawari8'
+BDY_DIR = 'himawari8/'   # baidu yun sync directory
 
 LAT_RANGE = [15, 58]
 LON_RANGE = [70, 140]

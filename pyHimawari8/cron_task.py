@@ -18,16 +18,16 @@ with open(CONFIGFILE, 'r', encoding='utf-8') as fh:
     CONFIG = toml.loads(fh.read())
 
 # mount JAXA FTP server
-cmd = 'curlftpfs {0} {1}'.format(CONFIG['JAXAFTP_LINK'], CONFIG['JAXAFTP_MP'])
-ret = subprocess.call(cmd)
-if ret != 0:
-    logger.error('Error in mount JAXA FTP server!')
-    raise Exception('Error in running {0}'.format(cmd))
+cmd = '/usr/bin/curlftpfs {0} {1} -o nonempty'.format(CONFIG['JAXAFTP_LINK'], CONFIG['JAXAFTP_MP'])
+ret = subprocess.call(cmd, shell=True)
+# if ret != 0:
+#    logger.error('Error in mount JAXA FTP server!')
+#    raise Exception('Error in running {0}'.format(cmd))
 
 # create time list
 tLapse = dt.timedelta(seconds=3600 * 12)
 tStart = tNow - tLapse
-tStartAtHour = dt.timedelta(tStart.year, tStart.month, tStart.day, tStart.hour)
+tStartAtHour = dt.datetime(tStart.year, tStart.month, tStart.day, tStart.hour)
 timeList = tRange(tStartAtHour, tNow, timedelta=1800)
 
 for mTime in timeList:
@@ -44,16 +44,16 @@ for mTime in timeList:
     # create Cloud phase image
     product = 'CLP'
     variable = 'CLTYPE'
-    verison = '010'
+    version = '010'
     imgFile = os.path.join(
         save_dir,
-        'H8_{prod}_{var}_{HHMM}_{verison}.png'.format(
+        'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
             prod=product,
             var=variable,
             HHMM=mTime.strftime('%H%M'),
             version=version
         ))
-    CLPFile = getH8ProdFile(mTime, product, version=verison)
+    CLPFile = getH8ProdFile(mTime, product, version=version)
     CLTYPE_cbRange, CLTYPE_cbTick, CLTYPE_TL = getCBSettings('CLTYPE')
     vis = Visualizer(CLPFile,
                      latRange=CONFIG['LAT_RANGE'],
@@ -70,16 +70,16 @@ for mTime in timeList:
     # create Cloud top height image
     product = 'CLP'
     variable = 'CLTH'
-    verison = '010'
+    version = '010'
     imgFile = os.path.join(
         save_dir,
-        'H8_{prod}_{var}_{HHMM}_{verison}.png'.format(
+        'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
             prod=product,
             var=variable,
             HHMM=mTime.strftime('%H%M'),
             version=version
         ))
-    CLPFile = getH8ProdFile(mTime, product, version=verison)
+    CLPFile = getH8ProdFile(mTime, product, version=version)
     vis = Visualizer(CLPFile,
                      latRange=CONFIG['LAT_RANGE'],
                      lonRange=CONFIG['LON_RANGE'])
@@ -94,16 +94,16 @@ for mTime in timeList:
     # create AOD plot with radiance
     product = 'ARP'
     variable = 'AOT'
-    verison = '021'
+    version = '021'
     imgFile = os.path.join(
         save_dir,
-        'H8_{prod}_{var}_{HHMM}_{verison}.png'.format(
+        'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
             prod=product,
             var=variable,
             HHMM=mTime.strftime('%H%M'),
             version=version
         ))
-    ARPFile = getH8ProdFile(mTime, product, version=verison)
+    ARPFile = getH8ProdFile(mTime, product, version=version)
     vis = Visualizer(ARPFile,
                      latRange=CONFIG['LAT_RANGE'],
                      lonRange=CONFIG['LON_RANGE'])
@@ -124,3 +124,7 @@ bp = ByPy()
 bp.mkdir(CONFIG['BDY_DIR'])
 bp.syncup(CONFIG['IMG_DIR'], CONFIG['BDY_DIR'])
 logger.info('Successfully sync items to Baidu Yun!')
+
+# umount ftp server
+cmd = 'umount {0}'.format(CONFIG['FTP_MP'])
+subprocess.call(cmd, shell=True)

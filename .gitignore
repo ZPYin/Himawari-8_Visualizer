@@ -4,4 +4,5 @@ log
 .vscode
 tmp/
 pyHimawari8/config/settings.toml
+*.swp
 notebook/.ipynb_checkpoints

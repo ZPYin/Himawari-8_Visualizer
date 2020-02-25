@@ -28,6 +28,7 @@ conda create -n pyHimawari8
 conda activate pyHimawari8
 
 conda install python=3.6 -y
+conda install -c conda-forge cartopy
 pip install -r requirements.txt
 ```
 

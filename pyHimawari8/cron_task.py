@@ -45,6 +45,7 @@ for mTime in timeList:
     product = 'CLP'
     variable = 'CLTYPE'
     version = '010'
+    pLe = 'L2'
     imgFile = os.path.join(
         save_dir,
         'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
@@ -53,7 +54,17 @@ for mTime in timeList:
             HHMM=mTime.strftime('%H%M'),
             version=version
         ))
-    CLPFile = getH8ProdFile(mTime, product, version=version)
+    CLPFile = os.path.join(
+        CONFIG['FTP_MP'],
+        'pub',
+        'himawari',
+        pLe,
+        product,
+        version,
+        mTime.strftime('%Y%m'),
+        mTime.strftime('%d'),
+        mTime.strftime('%H')
+        getH8ProdFile(mTime, product, version=version, pLe=pLe))
     CLTYPE_cbRange, CLTYPE_cbTick, CLTYPE_TL = getCBSettings('CLTYPE')
     vis = Visualizer(CLPFile,
                      latRange=CONFIG['LAT_RANGE'],
@@ -71,6 +82,7 @@ for mTime in timeList:
     product = 'CLP'
     variable = 'CLTH'
     version = '010'
+    pLe = 'L2'
     imgFile = os.path.join(
         save_dir,
         'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
@@ -79,7 +91,17 @@ for mTime in timeList:
             HHMM=mTime.strftime('%H%M'),
             version=version
         ))
-    CLPFile = getH8ProdFile(mTime, product, version=version)
+    CLPFile = os.path.join(
+        CONFIG['FTP_MP'],
+        'pub',
+        'himawari',
+        pLe,
+        product,
+        version,
+        mTime.strftime('%Y%m'),
+        mTime.strftime('%d'),
+        mTime.strftime('%H')
+        getH8ProdFile(mTime, product, version=version, pLe=pLe))
     vis = Visualizer(CLPFile,
                      latRange=CONFIG['LAT_RANGE'],
                      lonRange=CONFIG['LON_RANGE'])
@@ -95,6 +117,7 @@ for mTime in timeList:
     product = 'ARP'
     variable = 'AOT'
     version = '021'
+    pLe = 'L2'
     imgFile = os.path.join(
         save_dir,
         'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
@@ -103,7 +126,17 @@ for mTime in timeList:
             HHMM=mTime.strftime('%H%M'),
             version=version
         ))
-    ARPFile = getH8ProdFile(mTime, product, version=version)
+    ARPFile = os.path.join(
+        CONFIG['FTP_MP'],
+        'pub',
+        'himawari',
+        pLe,
+        product,
+        version,
+        mTime.strftime('%Y%m'),
+        mTime.strftime('%d'),
+        mTime.strftime('%H')
+        getH8ProdFile(mTime, product, version=version, pLe=pLe))
     vis = Visualizer(ARPFile,
                      latRange=CONFIG['LAT_RANGE'],
                      lonRange=CONFIG['LON_RANGE'])

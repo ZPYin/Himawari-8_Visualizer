@@ -1,8 +1,8 @@
 import os
+import fnmatch
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -12,15 +12,9 @@ from pyresample import create_area_def
 from logger import logger
 from colormap import chiljet_colormap
 from helper import parseTime
-import toml
-import fnmatch
 
 plt.switch_backend('Agg')
 PROJECTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CONFIG_FILE = os.path.join(PROJECTDIR,
-                           'pyHimawari8', 'config', 'settings.toml')
-with open(CONFIG_FILE, 'r', encoding='utf-8') as fh:
-    CONFIG = toml.loads(fh.read())
 
 
 class Visualizer(object):
@@ -83,7 +77,7 @@ class Visualizer(object):
 
         pass
 
-    def colorplot_with_band(self, band, imgFile, *args,
+    def colorplot_with_band(self, band, HSD_Dir, imgFile, *args,
                             axLatRange=[20, 60], axLonRange=[90, 140],
                             cmap=None, pixels=100, **kwargs):
         """
@@ -93,7 +87,9 @@ class Visualizer(object):
         ----------
         band: int
             band number [1-16]. See band specification in
-            `../doc/2018_A_Yamashita.pdf`
+            `../doc/2018_A_Yamashita.md`
+        HSD_Dir: str
+            path for hosting the HSD files.
         imgFile: str
             filename of the exported image
         Keywords
@@ -115,7 +111,7 @@ class Visualizer(object):
         files = find_files_and_readers(
             start_time=(self.mTime - dt.timedelta(seconds=300)),
             end_time=(self.mTime + dt.timedelta(seconds=300)),
-            base_dir=CONFIG['JAXAFTP_MP'],
+            base_dir=HSD_Dir,
             reader='ahi_hsd'
         )
 

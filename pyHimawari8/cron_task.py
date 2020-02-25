@@ -118,6 +118,14 @@ for mTime in timeList:
     variable = 'AOT'
     version = '021'
     pLe = 'L2'
+    HSD_Dir = os.path.join(
+        CONFIG['JAXAFTP_MP'],
+        'jma',
+        'HSD',
+        mTime.strftime('%Y%m'),
+        mTime.strftime('%d'),
+        mTime.strftime('%H')
+    )
     imgFile = os.path.join(
         save_dir,
         'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
@@ -143,6 +151,7 @@ for mTime in timeList:
     vis.load_data(variable, mTime)
     vis.colorplot_with_band(
         1,
+        HSD_Dir,
         imgFile,
         axLatRange=CONFIG['LAT_RANGE'],
         axLonRange=CONFIG['LON_RANGE'],

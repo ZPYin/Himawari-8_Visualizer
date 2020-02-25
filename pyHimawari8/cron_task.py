@@ -55,7 +55,7 @@ for mTime in timeList:
             version=version
         ))
     CLPFile = os.path.join(
-        CONFIG['FTP_MP'],
+        CONFIG['JAXAFTP_MP'],
         'pub',
         'himawari',
         pLe,
@@ -63,7 +63,7 @@ for mTime in timeList:
         version,
         mTime.strftime('%Y%m'),
         mTime.strftime('%d'),
-        mTime.strftime('%H')
+        mTime.strftime('%H'),
         getH8ProdFile(mTime, product, version=version, pLe=pLe))
     CLTYPE_cbRange, CLTYPE_cbTick, CLTYPE_TL = getCBSettings('CLTYPE')
     vis = Visualizer(CLPFile,
@@ -92,7 +92,7 @@ for mTime in timeList:
             version=version
         ))
     CLPFile = os.path.join(
-        CONFIG['FTP_MP'],
+        CONFIG['JAXAFTP_MP'],
         'pub',
         'himawari',
         pLe,
@@ -100,7 +100,7 @@ for mTime in timeList:
         version,
         mTime.strftime('%Y%m'),
         mTime.strftime('%d'),
-        mTime.strftime('%H')
+        mTime.strftime('%H'),
         getH8ProdFile(mTime, product, version=version, pLe=pLe))
     vis = Visualizer(CLPFile,
                      latRange=CONFIG['LAT_RANGE'],
@@ -127,7 +127,7 @@ for mTime in timeList:
             version=version
         ))
     ARPFile = os.path.join(
-        CONFIG['FTP_MP'],
+        CONFIG['JAXAFTP_MP'],
         'pub',
         'himawari',
         pLe,
@@ -135,7 +135,7 @@ for mTime in timeList:
         version,
         mTime.strftime('%Y%m'),
         mTime.strftime('%d'),
-        mTime.strftime('%H')
+        mTime.strftime('%H'),
         getH8ProdFile(mTime, product, version=version, pLe=pLe))
     vis = Visualizer(ARPFile,
                      latRange=CONFIG['LAT_RANGE'],

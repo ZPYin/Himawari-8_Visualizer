@@ -5,8 +5,9 @@ import os
 from logger import logger
 import datetime as dt
 from bypy import ByPy
-from helper import tRange, getH8ProdFile, getCBSettings
 from visualizer import Visualizer
+from helper import tRange, getH8ProdFile, getCBSettings
+from colormap import target_classification_colormap
 
 
 PROJECTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,17 +19,17 @@ with open(CONFIGFILE, 'r', encoding='utf-8') as fh:
     CONFIG = toml.loads(fh.read())
 
 # mount JAXA FTP server
-cmd = '/usr/bin/curlftpfs {0} {1} -o nonempty'.format(CONFIG['JAXAFTP_LINK'], CONFIG['JAXAFTP_MP'])
+cmd = '/usr/bin/curlftpfs {0} {1} -o nonempty'.format(
+    CONFIG['JAXAFTP_LINK'], CONFIG['JAXAFTP_MP'])
 ret = subprocess.call(cmd, shell=True)
-# if ret != 0:
-#    logger.error('Error in mount JAXA FTP server!')
-#    raise Exception('Error in running {0}'.format(cmd))
 
 # create time list
-tLapse = dt.timedelta(seconds=3600 * 12)
+tLapse = dt.timedelta(seconds=3600 * 6)
 tStart = tNow - tLapse
 tStartAtHour = dt.datetime(tStart.year, tStart.month, tStart.day, tStart.hour)
 timeList = tRange(tStartAtHour, tNow, timedelta=1800)
+
+updatedImgs = []   # updated images
 
 for mTime in timeList:
 
@@ -38,8 +39,14 @@ for mTime in timeList:
         os.makedirs(save_dir)
         logger.info('Create saving directory {0}'.format(save_dir))
 
-    # create RGB image
-    # TODO
+    # copy true color image
+    product = 'TRC'   # full disk true color image
+    AHI_TC_Img = os.path.join(
+        CONFIG['JAXAFTP_MP'], 'jma', 'hsd', mTime.strftime('%Y%m'),
+        mTime.strftime('%d'), mTime.strftime('%H'),
+        getH8ProdFile(mTime, product))
+    if os.path.exists(AHI_TC_Img):
+        updatedImgs.append([mTime, AHI_TC_Img])
 
     # create Cloud phase image
     product = 'CLP'
@@ -49,34 +56,33 @@ for mTime in timeList:
     imgFile = os.path.join(
         save_dir,
         'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
-            prod=product,
-            var=variable,
-            HHMM=mTime.strftime('%H%M'),
-            version=version
-        ))
+            prod=product, var=variable, HHMM=mTime.strftime('%H%M'),
+            version=version))
     CLPFile = os.path.join(
-        CONFIG['JAXAFTP_MP'],
-        'pub',
-        'himawari',
-        pLe,
-        product,
-        version,
-        mTime.strftime('%Y%m'),
-        mTime.strftime('%d'),
-        mTime.strftime('%H'),
+        CONFIG['JAXAFTP_MP'], 'pub', 'himawari', pLe, product, version,
+        mTime.strftime('%Y%m'), mTime.strftime('%d'), mTime.strftime('%H'),
         getH8ProdFile(mTime, product, version=version, pLe=pLe))
-    CLTYPE_cbRange, CLTYPE_cbTick, CLTYPE_TL = getCBSettings('CLTYPE')
-    vis = Visualizer(CLPFile,
-                     latRange=CONFIG['LAT_RANGE'],
-                     lonRange=CONFIG['LON_RANGE'])
-    vis.load_data(variable, mTime)
-    vis.colorplot(
-        imgFile,
-        axLatRange=CONFIG['LAT_RANGE'],
-        axLonRange=CONFIG['LON_RANGE'],
-        vmin=CLTYPE_cbRange[0], vmax=CLTYPE_cbRange[1],
-        cb_ticks=CLTYPE_cbTick, cb_ticklabels=CLTYPE_TL)
-    logger.info('Export to {0}'.format(imgFile))
+
+    if os.path.exists(CLPFile):
+        vis = Visualizer(
+            CLPFile,
+            latRange=CONFIG['LAT_RANGE'],
+            lonRange=CONFIG['LON_RANGE'])
+        vis.load_data(variable, mTime)
+
+        CLTYPE_cbRange, CLTYPE_cbTick, CLTYPE_TL = getCBSettings('CLTYPE')
+        vis.colorplot(
+            imgFile,
+            axLatRange=CONFIG['LAT_RANGE'],
+            axLonRange=CONFIG['LON_RANGE'],
+            vmin=CLTYPE_cbRange[0], vmax=CLTYPE_cbRange[1],
+            cb_ticks=CLTYPE_cbTick, cb_ticklabels=CLTYPE_TL,
+            cmap=target_classification_colormap())
+        logger.info('Export to {0}'.format(imgFile))
+
+        updatedImgs.append([mTime, imgFile])
+    else:
+        logger.warn('CLP file does not exist.\n{0}'.format(CLPFile))
 
     # create Cloud top height image
     product = 'CLP'
@@ -86,32 +92,30 @@ for mTime in timeList:
     imgFile = os.path.join(
         save_dir,
         'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
-            prod=product,
-            var=variable,
-            HHMM=mTime.strftime('%H%M'),
-            version=version
-        ))
+            prod=product, var=variable, HHMM=mTime.strftime('%H%M'),
+            version=version))
     CLPFile = os.path.join(
-        CONFIG['JAXAFTP_MP'],
-        'pub',
-        'himawari',
-        pLe,
-        product,
-        version,
-        mTime.strftime('%Y%m'),
-        mTime.strftime('%d'),
-        mTime.strftime('%H'),
+        CONFIG['JAXAFTP_MP'], 'pub', 'himawari', pLe, product, version,
+        mTime.strftime('%Y%m'), mTime.strftime('%d'), mTime.strftime('%H'),
         getH8ProdFile(mTime, product, version=version, pLe=pLe))
-    vis = Visualizer(CLPFile,
-                     latRange=CONFIG['LAT_RANGE'],
-                     lonRange=CONFIG['LON_RANGE'])
-    vis.load_data(variable, mTime)
-    vis.colorplot(
-        imgFile,
-        axLatRange=CONFIG['LAT_RANGE'],
-        axLonRange=CONFIG['LON_RANGE'],
-        vmin=0, vmax=15)
-    logger.info('Export to {0}'.format(imgFile))
+
+    if os.path.exists(CLPFile):
+        vis = Visualizer(
+            CLPFile,
+            latRange=CONFIG['LAT_RANGE'],
+            lonRange=CONFIG['LON_RANGE'])
+        vis.load_data(variable, mTime)
+
+        vis.colorplot(
+            imgFile,
+            axLatRange=CONFIG['LAT_RANGE'],
+            axLonRange=CONFIG['LON_RANGE'],
+            vmin=0, vmax=15)
+        logger.info('Export to {0}'.format(imgFile))
+
+        updatedImgs.append([mTime, imgFile])
+    else:
+        logger.warn('CLP file does not exist.\n{0}'.format(CLPFile))
 
     # create AOD plot with radiance
     product = 'ARP'
@@ -119,54 +123,50 @@ for mTime in timeList:
     version = '021'
     pLe = 'L2'
     HSD_Dir = os.path.join(
-        CONFIG['JAXAFTP_MP'],
-        'jma',
-        'HSD',
-        mTime.strftime('%Y%m'),
-        mTime.strftime('%d'),
-        mTime.strftime('%H')
+        CONFIG['JAXAFTP_MP'], 'jma', 'hsd', mTime.strftime('%Y%m'),
+        mTime.strftime('%d'), mTime.strftime('%H')
     )
     imgFile = os.path.join(
-        save_dir,
-        'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
-            prod=product,
-            var=variable,
-            HHMM=mTime.strftime('%H%M'),
-            version=version
-        ))
+        save_dir, 'H8_{prod}_{var}_{HHMM}_{version}.png'.format(
+            prod=product, var=variable, HHMM=mTime.strftime('%H%M'),
+            version=version))
     ARPFile = os.path.join(
-        CONFIG['JAXAFTP_MP'],
-        'pub',
-        'himawari',
-        pLe,
-        product,
-        version,
-        mTime.strftime('%Y%m'),
-        mTime.strftime('%d'),
-        mTime.strftime('%H'),
+        CONFIG['JAXAFTP_MP'], 'pub', 'himawari', pLe, product, version,
+        mTime.strftime('%Y%m'), mTime.strftime('%d'), mTime.strftime('%H'),
         getH8ProdFile(mTime, product, version=version, pLe=pLe))
-    vis = Visualizer(ARPFile,
-                     latRange=CONFIG['LAT_RANGE'],
-                     lonRange=CONFIG['LON_RANGE'])
-    vis.load_data(variable, mTime)
-    vis.colorplot_with_band(
-        1,
-        HSD_Dir,
-        imgFile,
-        axLatRange=CONFIG['LAT_RANGE'],
-        axLonRange=CONFIG['LON_RANGE'],
-        vmin=0, vmax=1,
-        pixels=1000,
-        cmap='gist_gray')
-    logger.info('Export to {0}'.format(imgFile))
+
+    if os.path.exists(ARPFile):
+        vis = Visualizer(
+            ARPFile,
+            latRange=CONFIG['LAT_RANGE'],
+            lonRange=CONFIG['LON_RANGE'])
+
+        vis.load_data(variable, mTime)
+
+        try:
+            vis.colorplot_with_band(
+                1, HSD_Dir, imgFile,
+                axLatRange=CONFIG['LAT_RANGE'],
+                axLonRange=CONFIG['LON_RANGE'],
+                vmin=0, vmax=1,
+                pixels=1000)
+            logger.info('Export to {0}'.format(imgFile))
+
+            updatedImgs.append([mTime, imgFile])
+        except ValueError as e:
+            logger.warn(e)
+    else:
+        logger.warn('ARP file does not exist.\n{0}'.format(ARPFile))
 
 # push to baiduyun
 bp = ByPy()
 # You need to authorize the app manually at first time.
+logger.info('Start to sync items to Baidu Yun!')
 bp.mkdir(CONFIG['BDY_DIR'])
-bp.syncup(CONFIG['IMG_DIR'], CONFIG['BDY_DIR'])
-logger.info('Successfully sync items to Baidu Yun!')
+for item in updatedImgs:
+    BDY_Dir = os.path.join(CONFIG['BDY_DIR'], item[0].strftime('%Y%m%d'))
+    bp.upload(item[1], BDY_Dir)
 
 # umount ftp server
-cmd = 'umount {0}'.format(CONFIG['FTP_MP'])
+cmd = 'umount {0}'.format(CONFIG['JAXAFTP_MP'])
 subprocess.call(cmd, shell=True)

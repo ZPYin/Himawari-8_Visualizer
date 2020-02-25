@@ -20,6 +20,7 @@ def getH8ProdFile(thisTime, product, *,
         product type.
         1. 'CLP': cloud property
         2. 'ARP': aerosol property
+        3. 'TRC': full-disk true color image
     Keywords
     --------
     pLe: str
@@ -48,7 +49,7 @@ def getH8ProdFile(thisTime, product, *,
         file = 'NC_H08_{yyyymmdd}_{HHMM}_{pLe}'.format(
                     yyyymmdd=thisTime.strftime('%Y%m%d'),
                     HHMM=thisTime.strftime('%H%M'),
-                    pLe=pLe) +\
+                    pLe=pLe) + \
                '{product}{version}_FLDK.{pixelNum}_{lineNum}.nc'.format(
                    product=product,
                    version=version,
@@ -59,12 +60,19 @@ def getH8ProdFile(thisTime, product, *,
         file = 'NC_H08_{yyyymmdd}_{HHMM}_{pLe}'.format(
                     yyyymmdd=thisTime.strftime('%Y%m%d'),
                     HHMM=thisTime.strftime('%H%M'),
-                    pLe=pLe) +\
+                    pLe=pLe) + \
                '{product}{version}_FLDK.{pixelNum}_{lineNum}.nc'.format(
                    product=product,
                    version=version,
                    pixelNum=pixelNum,
                    lineNum=lineNum)
+    elif product == 'TRC':
+        # full-disk true color image
+        file = 'PI_H08_{yyyymmdd}_{HHMM}_'.format(
+                    yyyymmdd=thisTime.strftime('%Y%m%d'),
+                    HHMM=thisTime.strftime('%H%M')) + \
+               '{product}_FLDK_R10_PGPFD.png'.format(
+                   product=product)
     else:
         raise Exception('Unknown product {}'.format(product))
 

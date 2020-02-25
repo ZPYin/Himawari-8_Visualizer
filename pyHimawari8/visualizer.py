@@ -213,6 +213,7 @@ class Visualizer(object):
         # Show figure
         # plt.show()
         plt.savefig(imgFile)
+        plt.close()
 
     def colorplot(self, imgFile, *args,
                   axLatRange=[20, 60], axLonRange=[90, 140], cmap=None,
@@ -312,3 +313,4 @@ class Visualizer(object):
         # Show figure
         # plt.show()
         plt.savefig(imgFile)
+        plt.close()

@@ -165,8 +165,9 @@ bp = ByPy()
 logger.info('Start to sync items to Baidu Yun!')
 bp.mkdir(CONFIG['BDY_DIR'])
 for item in updatedImgs:
-    logger.info('Upload to BDY: {0}'.format(item))
+    logger.info('Upload to BDY: {0}'.format(item[1]))
     BDY_Dir = os.path.join(CONFIG['BDY_DIR'], item[0].strftime('%Y%m%d'))
+    bp.mkdir(BDY_Dir)
     bp.upload(item[1], BDY_Dir)
 
 # umount ftp server

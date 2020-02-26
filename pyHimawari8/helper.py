@@ -8,7 +8,8 @@ import numpy as np
 
 def getH8ProdFile(thisTime, product, *,
                   pLe='L2', version='021',
-                  pixelNum='02401', lineNum='02401'):
+                  pixelNum='02401', lineNum='02401',
+                  area='FLDK'):
     """
     get the Himawari-8 product filename.
 
@@ -20,7 +21,7 @@ def getH8ProdFile(thisTime, product, *,
         product type.
         1. 'CLP': cloud property
         2. 'ARP': aerosol property
-        3. 'TRC': full-disk true color image
+        3. 'TRC': true color image
     Keywords
     --------
     pLe: str
@@ -31,6 +32,13 @@ def getH8ProdFile(thisTime, product, *,
         pixel number (default: '02401').
     lineNum: str
         line number (default: '02401').
+    area: str
+        (positional) observation area (default: 'FLDK')
+        1. 'FLDK': full-disk
+        2. 'JP01': Japan (the first 2.5 min)
+        3. 'JP02': Japan (the second 2.5 min)
+        4. 'JP03': Japan (the third 2.5 min)
+        5. 'JP04': Japan (the fourth 2.5 min)
     Examples
     --------
     >>> import datetime as np
@@ -67,14 +75,25 @@ def getH8ProdFile(thisTime, product, *,
                    pixelNum=pixelNum,
                    lineNum=lineNum)
     elif product == 'TRC':
-        # full-disk true color image
-        file = 'PI_H08_{yyyymmdd}_{HHMM}_'.format(
-                    yyyymmdd=thisTime.strftime('%Y%m%d'),
-                    HHMM=thisTime.strftime('%H%M')) + \
-               '{product}_FLDK_R10_PGPFD.png'.format(
-                   product=product)
+        # true color image
+        if area == 'FLDK':
+            file = 'PI_H08_{yyyymmdd}_{HHMM}_'.format(
+                        yyyymmdd=thisTime.strftime('%Y%m%d'),
+                        HHMM=thisTime.strftime('%H%M')) + \
+                '{product}_{area}_R10_PGPFD.png'.format(
+                    product=product,
+                    area=area)
+        elif area in ['JP01', 'JP02', 'JP03', 'JP04']:
+            file = 'PI_H08_{yyyymmdd}_{HHMM}_'.format(
+                        yyyymmdd=thisTime.strftime('%Y%m%d'),
+                        HHMM=thisTime.strftime('%H%M')) + \
+                '{product}_{area}_R10_PLLJP.png'.format(
+                    product=product,
+                    area=area)
+        else:
+            raise ValueError('Unknown area {0}'.format(area))
     else:
-        raise Exception('Unknown product {}'.format(product))
+        raise ValueError('Unknown product {}'.format(product))
 
     return file
 

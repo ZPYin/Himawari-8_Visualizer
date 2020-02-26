@@ -41,10 +41,11 @@ for mTime in timeList:
 
     # copy true color image
     product = 'TRC'   # full disk true color image
+    area = 'JP01'
     AHI_TC_Img = os.path.join(
         CONFIG['JAXAFTP_MP'], 'jma', 'hsd', mTime.strftime('%Y%m'),
         mTime.strftime('%d'), mTime.strftime('%H'),
-        getH8ProdFile(mTime, product))
+        getH8ProdFile(mTime, product, area=area))
     if os.path.exists(AHI_TC_Img):
         updatedImgs.append([mTime, AHI_TC_Img])
 
@@ -164,6 +165,7 @@ bp = ByPy()
 logger.info('Start to sync items to Baidu Yun!')
 bp.mkdir(CONFIG['BDY_DIR'])
 for item in updatedImgs:
+    logger.info('Upload to BDY: {0}'.format(item))
     BDY_Dir = os.path.join(CONFIG['BDY_DIR'], item[0].strftime('%Y%m%d'))
     bp.upload(item[1], BDY_Dir)
 

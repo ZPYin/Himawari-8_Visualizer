@@ -88,7 +88,7 @@ tornado==6.0.3
 traitlets==4.3.3
 trollimage==1.11.0
 trollsift==0.3.4
-urllib3==1.25.7
+urllib3==1.25.8
 wcwidth==0.1.8
 webencodings==0.5.1
 widgetsnbextension==3.5.1

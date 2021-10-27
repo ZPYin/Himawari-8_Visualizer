@@ -10,7 +10,7 @@ chardet==3.0.4
 configobj==5.0.6
 cryptography==2.8
 cycler==0.10.0
-dask==2.11.0
+dask==2021.10.0
 decorator==4.4.1
 defusedxml==0.6.0
 dill==0.3.1.1
